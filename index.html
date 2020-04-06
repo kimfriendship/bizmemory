@@ -4,9 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BIZMEMORY</title>
-  <link rel="stylesheet" href="./css/reset.css">
-  <link rel="stylesheet" href="./css/main.css">
-  <script defer src="./js/main.js"></script>
+  <link rel="stylesheet" href="./test-bizmemory-reset.css">
+  <link rel="stylesheet" href="./test-bizmemory.css">
+  <script defer src="./test-bizmemory.js"></script>
 </head>
 <body>
 
@@ -79,12 +79,21 @@
     </div>
 
   </div>
-  <div class="modal">
+  <div class="modal warning-modal">
     <div class="warningWindow">
       <span class="warningMsg">
         ''
       </span>
       <button class="warningClose">확인</button>
+    </div>
+  </div>
+  <div class="modal deleting-modal">
+    <div class="warningWindow">
+      <span class="deletingMsg">
+        정말 삭제하시겠습니까?
+      </span>
+      <button class="deleteConfirm">확인</button>
+      <button class="deleteClose">취소</button>
     </div>
   </div>
 
