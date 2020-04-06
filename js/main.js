@@ -261,6 +261,7 @@ const reverseCard = (list, key) => list.sort((card1, card2) => (card1[key] < car
 
 const sortBy = (list, key) => {
   if (list.length <= 1) return;
+
   list = list[0].id === sortCard(list, key)[0].id && list[1].id === sortCard(list, key)[1].id ? reverseCard(list, key) : sortCard(list, key);
 
   render();
@@ -270,12 +271,10 @@ $sortList.onclick = e => {
   if (e.target.matches('.sortName')) {
     sortBy(cardList, 'name');
     sortBy(favCardList, 'name');
-  }
-  else if (e.target.matches('.sortCompany')) {
+  } if (e.target.matches('.sortCompany')) {
     sortBy(cardList, 'company');
     sortBy(favCardList, 'company');
-  }
-  else if (e.target.matches('.sortRecent')) {
+  } if (e.target.matches('.sortRecent')) {
     sortBy(cardList, 'id');
     sortBy(favCardList, 'id');
   }
