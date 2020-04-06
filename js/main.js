@@ -259,6 +259,8 @@ $sortList.onclick = e => {
   if (e.target.matches('.sortWrapper > .sortList > .sortName')) sortBy('name');
   if (e.target.matches('.sortWrapper > .sortList > .sortCompany')) sortBy('company');
   if (e.target.matches('.sortWrapper > .sortList > .sortRecent')) sortBy('id');
-  
+
   render();
 };
+
+
