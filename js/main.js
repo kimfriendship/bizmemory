@@ -28,48 +28,43 @@ const blankFav = () => {
   $favTitle.style.display = favCardList.length ? 'block' : 'none';
 };
 
+const sortBy = key => {
+  const ascendOrder = [cardList, favCardList].forEach(list => list.sort((card1, card2) => (card1[key] > card2[key] ? 1 : card1[key] < card2[key] ? -1 : 0)));
+  const descendOrder = [cardList, favCardList].forEach(list => list.sort((card1, card2) => (card1[key] < card2[key] ? 1 : card1[key] > card2[key] ? -1 : 0)));
+
+  return key === 'id' ? descendOrder : ascendOrder;
+};
+
 const render = () => {
   let html = '';
   let favHtml = '';
   const isFav = [...cardList.filter(card => card.favorite), ...favCardList.filter(card => card.favorite)];
   const isNotFav = [...cardList.filter(card => !card.favorite), ...favCardList.filter(card => !card.favorite)];
+  const li = card => {
+    return `<li id="${card.id}" class="namecard color${card.color}">
+          <div class="namecardInfo">
+            <span class="cardName">${card.name}</span>
+            <span class="cardMobile">${card.mobile}</span>
+            <span class="cardEmail">${card.email}</span>
+          </div>
+          <div class="namecardCompany">
+            <span class="cardCompany">${card.company}</span>
+            <span class="cardDivision">${card.division}</span>
+            <span class="cardPosition">${card.position}</span>
+          </div>
+          <img class="favoriteBtn ${card.favorite ? 'far' : 'fas'}" src="./img/fav-icon${card.favorite ? '-on' : ''}.png">
+          <img class="deleteBtn" src="./img/close-btn.png">
+        </li>`;
+  };
 
   cardList = isNotFav;
   favCardList = isFav;
 
-  cardList.forEach(card => {
-    html += `<li id="${card.id}" class="namecard color${card.color}">
-          <div class="namecardInfo">
-            <span class="cardName">${card.name}</span>
-            <span class="cardMobile">${card.mobile}</span>
-            <span class="cardEmail">${card.email}</span>
-          </div>
-          <div class="namecardCompany">
-            <span class="cardCompany">${card.company}</span>
-            <span class="cardDivision">${card.division}</span>
-            <span class="cardPosition">${card.position}</span>
-          </div>
-          <img class="favoriteBtn fas" src="./img/fav-icon.png">
-          <img class="deleteBtn" src="./img/close-btn.png">
-        </li>`;
-  });
+  // html 부분도 li 함수로 만들어 중복을 피했습니다.
+  cardList.forEach(card => html += li(card));
+  favCardList.forEach(card => favHtml += li(card));
 
-  favCardList.forEach(card => {
-    favHtml += `<li id="${card.id}" class="namecard color${card.color}">
-          <div class="namecardInfo">
-            <span class="cardName">${card.name}</span>
-            <span class="cardMobile">${card.mobile}</span>
-            <span class="cardEmail">${card.email}</span>
-          </div>
-          <div class="namecardCompany">
-            <span class="cardCompany">${card.company}</span>
-            <span class="cardDivision">${card.division}</span>
-            <span class="cardPosition">${card.position}</span>
-          </div>
-          <img class="favoriteBtn far" src="./img/fav-icon-on.png">
-          <img class="deleteBtn" src="./img/close-btn.png">
-        </li>`;
-  });
+  console.log(favHtml)
 
   $cardList.innerHTML = html;
   $favList.innerHTML = favHtml;
@@ -147,7 +142,7 @@ const getCardList = () => {
   }].sort((card1, card2) => card2.id - card1.id);
 
   favCardList = [];
-  render('id');
+  render();
 };
 
 const generateId = () => {
@@ -174,35 +169,38 @@ $newMobile.onblur = e => {
 };
 
 $submitBtn.onclick = () => {
-
   const inputs = [...$newInfo.children].filter(child => child.nodeName === 'INPUT');
   const newValues = inputs.map(input => input.value.trim());
+  const isBlank = newValues.filter(value => value.length === 0)
 
-  if (newValues.filter(value => value.length === 0).length !== 0) {
+  // 공백이 있는지 확인 여부도 가독성을 위해 isBlank 변수로 선언하였습니다. 굳이 수정할 필요는 없습니다ㅎㅎ
+  if (isBlank) {
     $modal.style.display = 'block';
+
     switch (true) {
       case !newValues[0]:
         $warningMsg.textContent = '이름을 입력해 주세요.';
-        break;
+        return;
       case !newValues[1]:
         $warningMsg.textContent = '회사를 입력해 주세요.';
-        break;
+        return;
       case !newValues[2]:
         $warningMsg.textContent = '부서를 입력해 주세요.';
-        break;
+        return;
       case !newValues[3]:
         $warningMsg.textContent = '직급을 입력해 주세요.';
-        break;
+        return;
       case !newValues[4]:
         $warningMsg.textContent = '이메일을 입력해 주세요.';
-        break;
+        return;
       default:
         $warningMsg.textContent = '핸드폰 번호를 입력해 주세요.';
-    }
-    return;
-  }
+        return;
+    };
+  };
 
-  if (!checkName.test(newValues[0]) || !checkEmail.test(newValues[4]) || !checkMobile.test(newValues[5])) return;
+  // switch 문에서 break문 대신에 return문을 쓰면 등록을 막아주어 주석처리 했습니다.
+  // if (!checkName.test(newValues[0]) || !checkEmail.test(newValues[4]) || !checkMobile.test(newValues[5])) return;
   const [name, company, division, position, email, mobile] = newValues;
 
   cardList = [{
@@ -214,14 +212,12 @@ $submitBtn.onclick = () => {
     email,
     mobile,
     favorite: false,
-    color: generateColor()
+    color: generateColor(),
   }, ...cardList];
 
   render('id');
 
-  inputs.forEach(input => {
-    input.value = '';
-  });
+  inputs.forEach(input => input.value = '');
 };
 
 // close modal event
@@ -244,16 +240,11 @@ $nameCardList.onclick = e => {
 const favList = e => {
   if (!e.target.matches('.cardList > li > img.favoriteBtn') && !e.target.matches('.favList > li > img.favoriteBtn')) return;
   const { id } = e.target.parentNode;
+  const changeFavState = card => (card.id === +id ? {...card, favorite: !card.favorite } : card);
 
-  cardList = cardList.map(card => (card.id === +id ? {
-    ...card,
-    favorite: !card.favorite
-  } : card));
-
-  favCardList = favCardList.map(card => (card.id === +id ? {
-    ...card,
-    favorite: !card.favorite
-  } : card));
+// 위의 changeFavState 변수를 사용하여 긴 중복을 줄였습니다.
+  cardList = cardList.map(changeFavState);
+  favCardList = favCardList.map(changeFavState);
 
   render();
 };
@@ -262,16 +253,12 @@ $cardList.addEventListener('click', e => favList(e));
 $favList.addEventListener('click', e => favList(e));
 
 // Sort Button event
-
+// 31번째 줄에 정의된 sortBy 함수를 사용하여 중복을 줄였습니다.
+// 즐겨찾기 목록도 함께 정렬되도록 하였습니다.
 $sortList.onclick = e => {
-  if (e.target.matches('.sortWrapper > .sortList > .sortName')) {
-    cardList = cardList.sort((card1, card2) => (card1.name > card2.name ? 1 : card1.name < card2.name ? -1 : 0));
-  }
-  if (e.target.matches('.sortWrapper > .sortList > .sortCompany')) {
-    cardList = cardList.sort((co1, co2) => ((co1.company > co2.company) ? 1 : co1.company < co2.company ? -1 : 0));
-  }
-  if (e.target.matches('.sortWrapper > .sortList > .sortRecent')) {
-    cardList = cardList.sort((recent1, recent2) => ((recent1.id < recent2.id) ? 1 : recent1.id > recent2.id ? -1 : 0));
-  }
+  if (e.target.matches('.sortWrapper > .sortList > .sortName')) sortBy('name');
+  if (e.target.matches('.sortWrapper > .sortList > .sortCompany')) sortBy('company');
+  if (e.target.matches('.sortWrapper > .sortList > .sortRecent')) sortBy('id');
+  
   render();
 };
