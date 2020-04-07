@@ -24,6 +24,7 @@ body *, body *::before, body *::after {
 
 .wrapper {
   width: 100%;
+  min-height: 80vh;
   padding: 0;
   background-color: #f4f4f4;
 }
@@ -89,8 +90,6 @@ body *, body *::before, body *::after {
   right: 0;
   padding: 13px;
   width: 100%;
-  cursor: pointer;
-  background-color: #2b313f;
   color: #fff;
   border: 0;
   font-size: 20px;
@@ -99,7 +98,15 @@ body *, body *::before, body *::after {
   border-radius: 0px 0px 10px 10px;
   outline: none;
 }
-.newInfo button:hover {
+.invalid {
+  background-color: rgb(194, 194, 194);
+  cursor: auto;
+}
+.valid {
+  background-color: #2b313f;
+  cursor: pointer;
+}
+.valid:hover {
   background-color: #34466f;
 }
 /* warnning message */
@@ -366,9 +373,6 @@ body *, body *::before, body *::after {
 }
 
 .footer {
-  position: absolute;
-  left: 0;
-  bottom: 0;
   width: 100%;
   margin-top: 100px;
   padding: 20px;

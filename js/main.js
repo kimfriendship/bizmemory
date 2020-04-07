@@ -10,6 +10,9 @@ const $favList = document.querySelector('.favList');
 const $favTitle = document.querySelector('.favTitle');
 const $newName = document.querySelector('.newName');
 const $newEmail = document.querySelector('.newEmail');
+const $newCompany = document.querySelector('.newCompany');
+const $newDivision = document.querySelector('.newDivision');
+const $newPosition = document.querySelector('.newPosition');
 const $newMobile = document.querySelector('.newMobile');
 const $blankMsg = document.querySelector('.blankMsg');
 const $warningModal = document.querySelector('.warning-modal');
@@ -134,6 +137,28 @@ const getCardList = () => {
     mobile: '010-2535-4985',
     color: 'namecard color5',
     favorite: false,
+  },
+  {
+    id: 7,
+    name: '이규하',
+    company: '콜버스',
+    division: '소프트웨어',
+    position: '엔지니어',
+    email: 'hardy@callbus.com',
+    mobile: '010-2847-0896',
+    color: 'namecard color1',
+    favorite: false,
+  },
+  {
+    id: 8,
+    name: '최성진',
+    company: '와이즐리',
+    division: '개발',
+    position: '매니저',
+    email: 'sjchoi@wiselyshave.com',
+    mobile: '010-8993-0864',
+    color: 'namecard color2',
+    favorite: false,
   }].sort((card1, card2) => card2.id - card1.id);
 
   favCardList = [].sort((card1, card2) => card2.id - card1.id);
@@ -151,48 +176,47 @@ const generateColor = () => {
 
 window.onload = getCardList;
 
-$newName.onblur = e => {
-  e.target.nextElementSibling.style.display = checkName.test(e.target.value) ? 'none' : 'block';
+// register
+const newInfoInputs = [$newName, $newCompany, $newDivision, $newPosition, $newEmail, $newMobile];
+
+const btnState = state => {
+  $submitBtn.classList.toggle('valid', state === 'activate');
+  $submitBtn.classList.toggle('invalid', state === 'deactivate');
 };
 
-$newEmail.onblur = e => {
-  e.target.nextElementSibling.style.display = checkEmail.test(e.target.value) ? 'none' : 'block';
+// 기존에 onblur 이벤트를 onchange 이벤트에 호출되는 함수로 정리해 보았습니다.
+const checkValues = target => {
+  switch (target) {
+    case $newName :
+      $newName.nextElementSibling.style.display = checkName.test($newName.value) ? 'none' : 'block';
+      break;
+    case $newEmail :
+      $newEmail.nextElementSibling.style.display = checkEmail.test($newEmail.value) ? 'none' : 'block';
+      break;
+    default :
+      $newMobile.nextElementSibling.style.display = checkMobile.test($newMobile.value) ? 'none' : 'block';
+      break;
+  }
 };
 
-$newMobile.onblur = e => {
-  e.target.nextElementSibling.style.display = checkMobile.test(e.target.value) ? 'none' : 'block';
+const checkInputs = target => {
+  const isInvalid = !(checkName.test($newName.value) && checkEmail.test($newEmail.value) && checkMobile.test($newMobile.value));
+  const isBlank = newInfoInputs.filter(input => input.value.trim() === '').length !== 0;
+  
+  if (target === $newName || target === $newEmail || target === $newMobile ) checkValues(target);
+
+  isBlank || isInvalid ? btnState('deactivate') : btnState('activate');
 };
+
+newInfoInputs.forEach(input => input.addEventListener('change', ({ target }) => checkInputs(target)));
 
 $submitBtn.onclick = () => {
-  const inputs = [...$newInfo.children].filter(child => child.nodeName === 'INPUT');
-  const newValues = inputs.map(input => input.value.trim());
+  const isInvalid = !(checkName.test($newName.value) && checkEmail.test($newEmail.value) && checkMobile.test($newMobile.value));
+  const isBlank = newInfoInputs.filter(input => input.value.trim() === '').length !== 0;
+  const newValues = newInfoInputs.map(input => input.value.trim());
+  
+  if (isBlank || isInvalid) return;
 
-  if (newValues.filter(value => value.length === 0).length !== 0) {
-    $warningModal.style.display = 'block';
-
-    switch (true) {
-      case !newValues[0]:
-        $warningMsg.textContent = '이름을 입력해 주세요.';
-        break;
-      case !newValues[1]:
-        $warningMsg.textContent = '회사를 입력해 주세요.';
-        break;
-      case !newValues[2]:
-        $warningMsg.textContent = '부서를 입력해 주세요.';
-        break;
-      case !newValues[3]:
-        $warningMsg.textContent = '직급을 입력해 주세요.';
-        break;
-      case !newValues[4]:
-        $warningMsg.textContent = '이메일을 입력해 주세요.';
-        break;
-      default:
-        $warningMsg.textContent = '핸드폰 번호를 입력해 주세요.';
-    }
-    return;
-  }
-
-  if (!checkName.test(newValues[0]) || !checkEmail.test(newValues[4]) || !checkMobile.test(newValues[5])) return;
   const [name, company, division, position, email, mobile] = newValues;
 
   cardList = [{
@@ -209,7 +233,8 @@ $submitBtn.onclick = () => {
 
   render('id');
 
-  inputs.forEach(input => input.value = '');
+  newInfoInputs.forEach(input => input.value = '');
+  btnState('deactivate');
 };
 
 // close modal event
