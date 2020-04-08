@@ -231,8 +231,11 @@ $submitBtn.onclick = () => {
     color: generateColor(),
   }, ...cardList];
 
-  render('id');
 
+  reverseCard('id');
+  render();
+
+  [...$sortList.children].forEach(child => child.classList.remove('clicked'));
   newInfoInputs.forEach(input => input.value = '');
   btnState('deactivate');
 };
@@ -281,27 +284,24 @@ $favList.addEventListener('click', e => favList(e));
 
 // sorting event
 // 하은이가 수정한 부분 최대한 간소화 해보았습니다.
-const sortCard = (list, key) => list.sort((card1, card2) => (card1[key] > card2[key] ? 1 : (card1[key] < card2[key] ? -1 : 0)));
-const reverseCard = (list, key) => list.sort((card1, card2) => (card1[key] < card2[key] ? 1 : (card1[key] > card2[key] ? -1 : 0)));
+const sortCard = key => [cardList, favCardList].forEach(list => list.sort((card1, card2) => (card1[key] > card2[key] ? 1 : (card1[key] < card2[key] ? -1 : 0))));
+const reverseCard = key => [cardList, favCardList].forEach(list => list.sort((card1, card2) => (card1[key] < card2[key] ? 1 : (card1[key] > card2[key] ? -1 : 0))));
 
 const sortBy = (key, target) => {
-  if (cardList.length >= 2) {
-    target.classList.contains('sort') ? sortCard(cardList, key) : reverseCard(cardList, key);
-  }
-  if (favCardList.length >= 2) {
-    target.classList.contains('sort') ? sortCard(favCardList, key) : reverseCard(favCardList, key);
-  }
-  if (key === 'id') {
-    cardList = cardList.reverse();
-    favCardList = favCardList.reverse();
-  }
+  if (cardList.length <= 1 && favCardList.length <= 1) return;
+
+  target.classList.contains('sort') ? sortCard(key) : reverseCard(key);
+  if (key === 'id') target.classList.contains('sort') ? reverseCard(key) : sortCard(key);
 
   render();
 };
 
 $sortList.onclick = ({ target }) => {
-  [...$sortList.children].forEach(child => child.classList.toggle('clicked', child === target));
-  if (target.classList.contains('clicked')) target.classList.toggle('sort');
+  target.classList.toggle('sort');
+  [...$sortList.children].forEach(child => {
+    child.classList.toggle('clicked', child === target);
+    if (!child.classList.contains('clicked')) child.classList.remove('sort');
+  });
 
   if (target.matches('.sortName')) sortBy('name', target);
   if (target.matches('.sortCompany')) sortBy('company', target);
