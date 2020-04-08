@@ -158,6 +158,9 @@ body *, body *::before, body *::after {
 .sortList > li:hover {
   background-color: rgb(213, 109, 109);
 }
+.sortList > .clicked {
+  background-color: rgb(213, 109, 109);
+}
 /* fav list */
 .favTitle {
   margin: 10px 0;

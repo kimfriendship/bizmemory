@@ -284,23 +284,26 @@ $favList.addEventListener('click', e => favList(e));
 const sortCard = (list, key) => list.sort((card1, card2) => (card1[key] > card2[key] ? 1 : (card1[key] < card2[key] ? -1 : 0)));
 const reverseCard = (list, key) => list.sort((card1, card2) => (card1[key] < card2[key] ? 1 : (card1[key] > card2[key] ? -1 : 0)));
 
-const sortBy = (list, key) => {
-  if (list.length <= 1) return;
-
-  list = list[0].id === sortCard(list, key)[0].id && list[1].id === sortCard(list, key)[1].id ? reverseCard(list, key) : sortCard(list, key);
+const sortBy = (key, target) => {
+  if (cardList.length >= 2) {
+    target.classList.contains('sort') ? sortCard(cardList, key) : reverseCard(cardList, key);
+  }
+  if (favCardList.length >= 2) {
+    target.classList.contains('sort') ? sortCard(favCardList, key) : reverseCard(favCardList, key);
+  }
+  if (key === 'id') {
+    cardList = cardList.reverse();
+    favCardList = favCardList.reverse();
+  }
 
   render();
 };
 
-$sortList.onclick = e => {
-  if (e.target.matches('.sortName')) {
-    sortBy(cardList, 'name');
-    sortBy(favCardList, 'name');
-  } if (e.target.matches('.sortCompany')) {
-    sortBy(cardList, 'company');
-    sortBy(favCardList, 'company');
-  } if (e.target.matches('.sortRecent')) {
-    sortBy(cardList, 'id');
-    sortBy(favCardList, 'id');
-  }
+$sortList.onclick = ({ target }) => {
+  [...$sortList.children].forEach(child => child.classList.toggle('clicked', child === target));
+  if (target.classList.contains('clicked')) target.classList.toggle('sort');
+
+  if (target.matches('.sortName')) sortBy('name', target);
+  if (target.matches('.sortCompany')) sortBy('company', target);
+  if (target.matches('.sortRecent')) sortBy('id', target);
 };
